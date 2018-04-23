@@ -1,0 +1,243 @@
+#:set line  0.045
+#:set space  0.025
+#:set linespace  0.07
+#:set vspace 0.25
+
+<CheckBox>:
+    color: 1,1,1,5
+    size_hint: vspace, line
+
+
+<Button>:
+    font_size: 12
+    color: 1,1,1,1
+    size_hint: vspace, line
+
+<Label>:
+    font_size: 15
+    color: 1,1,1,1
+    size_hint: vspace, line
+
+<TextInput>:
+    font_size: 12
+    color: 1,1,1,1
+    size_hint: 2*vspace-0.01, line
+
+<general_layout>:
+	FloatLayout:
+		##pedestal
+		Label:
+			font_size: 19
+			color: 1,0,0,1
+        	text: "Pedestal section"
+        	pos_hint: {"right": vspace, 'top': 1-(space)}
+	
+    	Button:
+    		text: "Calculate pedestal"
+        	pos_hint: {"right": vspace, 'top': 1-(2*linespace+space)}
+        	on_press: root.pedestalcommand(pedestal_file_in.text,pedestal_file_out.text,pedestal_number.text,pedestal_done.text,pedestal_done.color)
+	
+		Label:
+        	text: "Pedestal raw file path (IN)"
+        	pos_hint: {'right': 2*vspace, 'top': 1-(space)}
+	
+    	TextInput:
+    		id: pedestal_file_in
+        	pos_hint: {"right": 4*vspace, 'top': 1-(space)}
+	
+    	Label:
+        	text: "Pedestal root file path (OUT)"
+        	pos_hint: {'right': 2*vspace, 'top': 1-(1*linespace+space)}
+	
+    	TextInput:
+    		id: pedestal_file_out
+            text: pedestal_file_in.text[:-3]+"root"
+        	pos_hint: {'right': 4*vspace , 'top': 1-(1*linespace+space)}
+	
+    	Label:
+        	text: "Number of entries"
+        	pos_hint: {'right': 2*vspace, 'top': 1-(2*linespace+space)}
+	
+    	TextInput:
+    		id: pedestal_number
+        	pos_hint: {"right": 4*vspace , 'top': 1-(2*linespace+space)}
+	
+	    
+    	Widget:
+        	id: separator1
+            size_hint_x: 3*vspace
+        	size_hint_y: 0
+        	pos_hint: {"right": 3*vspace , 'top': 1-(2*linespace+4*space)}
+        	canvas:
+            	Color:
+                	rgb: root.col1
+            	Rectangle:
+                	pos: 0, separator1.center_y
+                	size: separator1.width, 5
+
+        Label:
+            id: pedestal_done
+            font_size: 10
+            text: 'To Do'
+            color: 1,0,0,1
+            pos_hint: {'right': 4*vspace, 'top': 1-(2*linespace+3*space)}
+	
+	
+    	##decoding
+		Label:
+			font_size: 19
+			color: 1,0,0,1
+        	text: "Decoding section"
+        	pos_hint: {"right": vspace, 'top': 1-(3*linespace+2*space)}
+
+        Label:
+            text: "Common mode enabled"
+            pos_hint: {'right': vspace, 'top': 1-(6*linespace+2*space)}
+
+        CheckBox:
+            id: commonmode_tick
+            active: True
+            pos_hint: {'right': vspace, 'top': 1-(7*linespace+2*space)}
+
+	
+    	Button:
+			text: "Decode"
+            pos_hint: {"right": vspace, 'top': 1-(8*linespace+2*space)}
+			on_press: root.decodingcommand(raw_in.text,raw_out.text,raw_number.text,raw_limit.text,raw_sigmafile.text,raw_pedestalfile.text,commonmode_tick.active)
+	
+		Label:
+        	text: "Raw file path (IN)"
+        	pos_hint: {'right': 2*vspace, 'top': 1-(3*linespace+2*space)}
+	
+    	TextInput:
+    		id: raw_in
+        	pos_hint: {"right": 4*vspace, 'top': 1-(3*linespace+2*space)}
+	
+    	Label:
+        	text: "Root file path (OUT)"
+        	pos_hint: {'right': 2*vspace, 'top': 1-(4*linespace+2*space)}
+	
+    	TextInput:
+    		id: raw_out
+            text: raw_in.text[:-3]+"root"
+        	pos_hint: {'right': 4*vspace , 'top': 1-(4*linespace+2*space)}
+	
+    	Label:
+        	text: "Number of entries"
+        	pos_hint: {'right': 2*vspace, 'top': 1-(5*linespace+2*space)}
+	
+    	TextInput:
+    		id: raw_number
+        	pos_hint: {"right": 4*vspace , 'top': 1-(5*linespace+2*space)}
+	
+    	Label:
+        	text: "Zero sup limit (sigma)"
+        	pos_hint: {'right': 2*vspace, 'top': 1-(6*linespace+2*space)}
+	
+    	TextInput:
+    		id: raw_limit
+        	pos_hint: {"right": 4*vspace , 'top': 1-(6*linespace+2*space)}
+	
+    	Label:
+        	text: "Sigma file path"
+        	pos_hint: {'right': 2*vspace, 'top': 1-(7*linespace+2*space)}
+	
+    	TextInput:
+            text: pedestal_file_out.text[:-5]+".sigma"
+    		id: raw_sigmafile
+        	pos_hint: {"right": 4*vspace , 'top': 1-(7*linespace+2*space)}
+	
+    	Label:
+        	text: "Pedestal file path"
+        	pos_hint: {'right': 2*vspace, 'top': 1-(8*linespace+2*space)}
+	
+    	TextInput:
+            text: pedestal_file_out.text[:-5]+".pede"
+    		id: raw_pedestalfile
+        	pos_hint: {"right": 4*vspace , 'top': 1-(8*linespace+2*space)}
+	
+    	Widget:
+    		id: separator2
+            size_hint_x: 3*vspace
+    		size_hint_y: 0
+    		pos_hint: {"right": 3*vspace , 'top': 1-(8*linespace+5*space)}
+    		canvas:
+        		Color:
+            		rgb: root.col2
+        		Rectangle:
+            		pos: 0, separator2.center_y
+            		size: separator2.width, 5
+
+        Label:
+            id: decoder_done
+            font_size: 10
+            text: 'To Do'
+            color: 1,0,0,1
+            pos_hint: {'right': 4*vspace, 'top': 1-(8*linespace+4*space)}
+	
+    	##analysis mode
+		Label:
+			font_size: 19
+			color: 1,0,0,1
+        	text: "Analysis section"
+        	pos_hint: {"right": vspace, 'top': 1-(9*linespace+3*space)}
+	
+    	Button:
+    		text: "Do the Analysis"
+        	pos_hint: {"right": vspace, 'top': 1-(12*linespace+3*space)}
+        	on_press: root.analysiscommand(root_file_analysis.text, root_max_analysis.text, max_mode.text, root_number.text)
+	
+		Label:
+        	text: "Root file path (IN)"
+        	pos_hint: {'right': 2*vspace, 'top': 1-(9*linespace+3*space)}
+	
+    	TextInput:
+            id: root_file_analysis
+            text: raw_out.text
+        	pos_hint: {"right": 4*vspace, 'top': 1-(9*linespace+3*space)}
+
+        Label:
+            text: "Root_max file path (OUT)"
+            pos_hint: {'right': 2*vspace, 'top': 1-(10*linespace+3*space)}
+    
+        TextInput:
+            id: root_max_analysis
+            text: raw_out.text[:-5]+"_max.root"
+            pos_hint: {'right': 4*vspace , 'top': 1-(10*linespace+3*space)}
+	
+    	Label:
+        	text: "Peak det_mode (max default)"
+        	pos_hint: {'right': 2*vspace, 'top': 1-(11*linespace+3*space)}
+	
+    	TextInput:
+            id: max_mode
+            text: 'max'
+        	pos_hint: {'right': 4*vspace , 'top': 1-(11*linespace+3*space)}
+
+        Label:
+        	text: "Number of entries"
+        	pos_hint: {'right': 2*vspace, 'top': 1-(12*linespace+3*space)}
+	
+    	TextInput:
+            id: root_number
+            text: raw_number.text
+            pos_hint: {'right': 4*vspace , 'top': 1-(12*linespace+3*space)}
+
+        Widget:
+            id: separator3
+            size_hint_x: 3*vspace
+            size_hint_y: 0
+            pos_hint: {"right": 3*vspace , 'top': 1-(12*linespace+6*space)}
+            canvas:
+                Color:
+                    rgb: root.col3
+                Rectangle:
+                    pos: 0, separator3.center_y
+                    size: separator3.width, 5
+
+        Label:
+            id: analysis_done
+            font_size: 10
+            text: 'To Do'
+            color: 1,0,0,1
+            pos_hint: {'right': 4*vspace, 'top': 1-(12*linespace+5*space)}
