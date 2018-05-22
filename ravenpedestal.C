@@ -118,6 +118,29 @@ std::cout<<"Start"<<std::endl;
     std::string filename_out_path = filename_out.substr(0, filename_out.find_last_of('.')); //create the path for the other files
     settings.close();
 
+// -------------------------------- LOAD DETECTOR SETTINGS -------------------------------- //
+    int ntotFEC = 0;
+    std::vector<int> ntotAPV;
+    int ntotCh_Pad = 0;
+    int totTiming = 0;
+    string file_APV_mapping;
+    string file_DET_mapping;
+
+    std::ifstream detector("detector_settings");                    //detector settings file
+    if(!detector){
+        std::cout<<"ERROR -- detector file not found"<<std::endl;
+    } 
+    while(detector.is_open()){
+        if(detector.eof()){ printf("detector LOADED\n"); break; }
+        detector>>ntotFEC;
+        ntotAPV.resize(ntotFEC);
+        for (int i = 0; i < ntotFEC; ++i){               //to load the number of APV for all FEC
+            detector>>ntotAPV[i];
+        }
+        detector>>ntotCh_Pad>>totTiming>>file_APV_mapping>>file_DET_mapping;
+    }
+    detector.close();
+
 // -------------------------------- LOAD MAPPINGS -------------------------------- //
 
     int apvdim=0, detdim=0;                 //I know, there are some better ways to do this, but this is vary simple and self-explicative
@@ -125,7 +148,7 @@ std::cout<<"Start"<<std::endl;
     char readvar[10];
     int i =0;
 
-    std::ifstream apvmap("apv_mapping");     //apv mapping file
+    std::ifstream apvmap(file_APV_mapping.c_str());     //apv mapping file
     if(!apvmap){
         std::cout<<"ERROR -- apv mapping file not found"<<std::endl;
     }
@@ -156,7 +179,7 @@ std::cout<<"Start"<<std::endl;
     }
     apvmap.close();
 
-    std::ifstream detmap("detector_mapping_hybrid");     //apv mapping file
+    std::ifstream detmap(file_DET_mapping.c_str());     //apv mapping file
 
     if(!detmap){
         std::cout<<"ERROR -- detector mapping file not found"<<std::endl;
@@ -187,27 +210,6 @@ std::cout<<"Start"<<std::endl;
         }
     }
     detmap.close();
-
-// -------------------------------- LOAD DETECTOR SETTINGS -------------------------------- //
-    int ntotFEC = 0;
-    std::vector<int> ntotAPV;
-    int ntotCh_Pad = 0;
-    int totTiming = 0;
-
-    std::ifstream detector("detector_settings");                    //detector settings file
-    if(!detector){
-        std::cout<<"ERROR -- detector file not found"<<std::endl;
-    } 
-    while(detector.is_open()){
-        if(detector.eof()){ printf("detector LOADED\n"); break; }
-        detector>>ntotFEC;
-        ntotAPV.resize(ntotFEC);
-        for (int i = 0; i < ntotFEC; ++i){               //to load the number of APV for all FEC
-            detector>>ntotAPV[i];
-        }
-        detector>>ntotCh_Pad>>totTiming;
-    }
-    detector.close();
 
 // -------------------------------- DECODER -------------------------------- //
     //It's complicated to explain exactly what it do, read the manual to ha some ideas

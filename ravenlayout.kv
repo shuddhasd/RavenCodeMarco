@@ -1,7 +1,12 @@
-#:set line  0.045
-#:set space  0.025
-#:set linespace  0.07
-#:set vspace 0.25
+#:set nline 16
+#:set nsection 3
+
+#:set line  1.0/((nline*1.5)+(0.7*nsection)+0.5)
+#:set space  line*0.5
+#:set linespace  line+space
+#:set separator line*1.2
+#:set vspace 1.0/4
+
 
 <CheckBox>:
     color: 1,1,1,5
@@ -66,21 +71,21 @@
     	Widget:
         	id: separator1
             size_hint_x: 3*vspace
-        	size_hint_y: 0
-        	pos_hint: {"right": 3*vspace , 'top': 1-(2*linespace+4*space)}
+        	size_hint_y: line*1.2
+        	pos_hint: {"right": 3*vspace , 'top': 1-(3*linespace)}
         	canvas:
             	Color:
                 	rgb: root.col1
             	Rectangle:
-                	pos: 0, separator1.center_y
-                	size: separator1.width, 5
+                	pos: 0, (separator1.center_y-separator1.height*0.1)
+                	size: separator1.width, separator1.height*0.2
 
         Label:
             id: pedestal_done
-            font_size: 10
+            font_size: 12
             text: 'To Do'
             color: 1,0,0,1
-            pos_hint: {'right': 4*vspace, 'top': 1-(2*linespace+3*space)}
+            pos_hint: {'right': 4*vspace, 'center_y': 1-(3*linespace+space+line*0.1)}
 	
 	
     	##decoding
@@ -88,156 +93,219 @@
 			font_size: 19
 			color: 1,0,0,1
         	text: "Decoding section"
-        	pos_hint: {"right": vspace, 'top': 1-(3*linespace+2*space)}
+        	pos_hint: {"right": vspace, 'top': 1-(3*linespace+separator)}
 
         Label:
             text: "Common mode enabled"
-            pos_hint: {'right': vspace, 'top': 1-(6*linespace+2*space)}
+            pos_hint: {'right': vspace, 'top': 1-(6*linespace+separator)}
 
         CheckBox:
             id: commonmode_tick
             active: True
-            pos_hint: {'right': vspace, 'top': 1-(7*linespace+2*space)}
+            pos_hint: {'right': vspace, 'top': 1-(7*linespace+separator)}
 
 	
     	Button:
 			text: "Decode"
-            pos_hint: {"right": vspace, 'top': 1-(8*linespace+2*space)}
+            pos_hint: {"right": vspace, 'top': 1-(8*linespace+separator)}
 			on_press: root.decodingcommand(raw_in.text,raw_out.text,raw_number.text,raw_limit.text,raw_sigmafile.text,raw_pedestalfile.text,commonmode_tick.active)
 	
 		Label:
         	text: "Raw file path (IN)"
-        	pos_hint: {'right': 2*vspace, 'top': 1-(3*linespace+2*space)}
+        	pos_hint: {'right': 2*vspace, 'top': 1-(3*linespace+separator)}
 	
     	TextInput:
     		id: raw_in
-        	pos_hint: {"right": 4*vspace, 'top': 1-(3*linespace+2*space)}
+        	pos_hint: {"right": 4*vspace, 'top': 1-(3*linespace+separator)}
 	
     	Label:
         	text: "Root file path (OUT)"
-        	pos_hint: {'right': 2*vspace, 'top': 1-(4*linespace+2*space)}
+        	pos_hint: {'right': 2*vspace, 'top': 1-(4*linespace+separator)}
 	
     	TextInput:
     		id: raw_out
             text: raw_in.text[:-3]+"root"
-        	pos_hint: {'right': 4*vspace , 'top': 1-(4*linespace+2*space)}
+        	pos_hint: {'right': 4*vspace , 'top': 1-(4*linespace+separator)}
 	
     	Label:
         	text: "Number of entries"
-        	pos_hint: {'right': 2*vspace, 'top': 1-(5*linespace+2*space)}
+        	pos_hint: {'right': 2*vspace, 'top': 1-(5*linespace+separator)}
 	
     	TextInput:
     		id: raw_number
-        	pos_hint: {"right": 4*vspace , 'top': 1-(5*linespace+2*space)}
+        	pos_hint: {"right": 4*vspace , 'top': 1-(5*linespace+separator)}
 	
     	Label:
         	text: "Zero sup limit (sigma)"
-        	pos_hint: {'right': 2*vspace, 'top': 1-(6*linespace+2*space)}
+        	pos_hint: {'right': 2*vspace, 'top': 1-(6*linespace+separator)}
 	
     	TextInput:
     		id: raw_limit
-        	pos_hint: {"right": 4*vspace , 'top': 1-(6*linespace+2*space)}
+        	pos_hint: {"right": 4*vspace , 'top': 1-(6*linespace+separator)}
 	
     	Label:
         	text: "Sigma file path"
-        	pos_hint: {'right': 2*vspace, 'top': 1-(7*linespace+2*space)}
+        	pos_hint: {'right': 2*vspace, 'top': 1-(7*linespace+separator)}
 	
     	TextInput:
             text: pedestal_file_out.text[:-5]+".sigma"
     		id: raw_sigmafile
-        	pos_hint: {"right": 4*vspace , 'top': 1-(7*linespace+2*space)}
+        	pos_hint: {"right": 4*vspace , 'top': 1-(7*linespace+separator)}
 	
     	Label:
         	text: "Pedestal file path"
-        	pos_hint: {'right': 2*vspace, 'top': 1-(8*linespace+2*space)}
+        	pos_hint: {'right': 2*vspace, 'top': 1-(8*linespace+separator)}
 	
     	TextInput:
             text: pedestal_file_out.text[:-5]+".pede"
     		id: raw_pedestalfile
-        	pos_hint: {"right": 4*vspace , 'top': 1-(8*linespace+2*space)}
-	
-    	Widget:
-    		id: separator2
+        	pos_hint: {"right": 4*vspace , 'top': 1-(8*linespace+separator)}
+	   
+        Widget:
+            id: separator2
             size_hint_x: 3*vspace
-    		size_hint_y: 0
-    		pos_hint: {"right": 3*vspace , 'top': 1-(8*linespace+5*space)}
-    		canvas:
-        		Color:
-            		rgb: root.col2
-        		Rectangle:
-            		pos: 0, separator2.center_y
-            		size: separator2.width, 5
+            size_hint_y: line*1.2
+            pos_hint: {"right": 3*vspace , 'top': 1-(9*linespace+separator-space)}
+            canvas:
+                Color:
+                    rgb: root.col2
+                Rectangle:
+                    pos: 0, separator2.center_y-separator2.height*0.1
+                    size: separator2.width, separator2.height*0.2
 
         Label:
             id: decoder_done
-            font_size: 10
+            font_size: 12
             text: 'To Do'
             color: 1,0,0,1
-            pos_hint: {'right': 4*vspace, 'top': 1-(8*linespace+4*space)}
-	
+            pos_hint: {'right': 4*vspace, 'center_y': 1-(9*linespace+separator+line*0.1)}
+
     	##analysis mode
 		Label:
 			font_size: 19
 			color: 1,0,0,1
         	text: "Analysis section"
-        	pos_hint: {"right": vspace, 'top': 1-(9*linespace+3*space)}
+        	pos_hint: {"right": vspace, 'top': 1-(9*linespace+2*separator-space)}
 	
     	Button:
     		text: "Do the Analysis"
-        	pos_hint: {"right": vspace, 'top': 1-(12*linespace+3*space)}
-        	on_press: root.analysiscommand(root_file_analysis.text, root_max_analysis.text, max_mode.text, root_number.text)
+        	pos_hint: {"right": vspace, 'top': 1-(12*linespace+2*separator-space)}
+        	on_press: root.analysiscommand(root_file_analysis.text, root_max_analysis.text, root_number.text)
 	
 		Label:
         	text: "Root file path (IN)"
-        	pos_hint: {'right': 2*vspace, 'top': 1-(9*linespace+3*space)}
+        	pos_hint: {'right': 2*vspace, 'top': 1-(9*linespace+2*separator-space)}
 	
     	TextInput:
             id: root_file_analysis
             text: raw_out.text
-        	pos_hint: {"right": 4*vspace, 'top': 1-(9*linespace+3*space)}
+        	pos_hint: {"right": 4*vspace, 'top': 1-(9*linespace+2*separator-space)}
 
         Label:
             text: "Root_max file path (OUT)"
-            pos_hint: {'right': 2*vspace, 'top': 1-(10*linespace+3*space)}
+            pos_hint: {'right': 2*vspace, 'top': 1-(10*linespace+2*separator-space)}
     
         TextInput:
             id: root_max_analysis
             text: raw_out.text[:-5]+"_max.root"
-            pos_hint: {'right': 4*vspace , 'top': 1-(10*linespace+3*space)}
+            pos_hint: {'right': 4*vspace , 'top': 1-(10*linespace+2*separator-space)}
 	
     	Label:
-        	text: "Peak det_mode (max default)"
-        	pos_hint: {'right': 2*vspace, 'top': 1-(11*linespace+3*space)}
+        	text: "Peak det_mode"
+        	pos_hint: {'right': 2*vspace, 'top': 1-(11*linespace+2*separator-space)}
 	
-    	TextInput:
-            id: max_mode
-            text: 'max'
-        	pos_hint: {'right': 4*vspace , 'top': 1-(11*linespace+3*space)}
+    	#TextInput:
+         #   id: max_mode
+          #  text: 'max'
+        	#pos_hint: {'right': 4*vspace , 'top': 1-(11*linespace+2*separator-space)}
 
         Label:
         	text: "Number of entries"
-        	pos_hint: {'right': 2*vspace, 'top': 1-(12*linespace+3*space)}
+        	pos_hint: {'right': 2*vspace, 'top': 1-(12*linespace+2*separator-space)}
 	
     	TextInput:
             id: root_number
             text: raw_number.text
-            pos_hint: {'right': 4*vspace , 'top': 1-(12*linespace+3*space)}
+            pos_hint: {'right': 4*vspace , 'top': 1-(12*linespace+2*separator-space)}
 
         Widget:
             id: separator3
             size_hint_x: 3*vspace
-            size_hint_y: 0
-            pos_hint: {"right": 3*vspace , 'top': 1-(12*linespace+6*space)}
+            size_hint_y: line*1.2
+            pos_hint: {"right": 3*vspace , 'top': 1-(13*linespace+2*separator-2*space)}
             canvas:
                 Color:
                     rgb: root.col3
                 Rectangle:
-                    pos: 0, separator3.center_y
-                    size: separator3.width, 5
+                    pos: 0, (separator3.center_y-separator3.height*0.1)
+                    size: separator3.width, separator3.height*0.2
 
         Label:
             id: analysis_done
-            font_size: 10
+            font_size: 12
             text: 'To Do'
             color: 1,0,0,1
-            pos_hint: {'right': 4*vspace, 'top': 1-(12*linespace+5*space)}
+            pos_hint: {'right': 4*vspace, 'center_y': 1-(13*linespace+2*separator-space+line*0.1)}
+
+        ##Dimensions part
+        Label:
+            font_size: 19
+            color: 1,0,0,1
+            text: "Detector characteristic"
+            pos_hint: {"right": vspace, 'top': 1-(13*linespace+3*separator-2*space)}
+
+        Button:
+            text: "Update"
+            pos_hint: {"right": vspace, 'top': 1-(15*linespace+3*separator-2*space)}
+            on_press: root.updatecommand(fec_number.text, apv_number.text, timestamp_number.text,apv_mapping.text,detector_mapping.text)
+
+        Label:
+            text: "Number FECs"
+            size_hint: vspace/2.1, line
+            pos_hint: {'right': 1.6*vspace, 'top': 1-(13*linespace+3*separator-2*space)}
+    
+        TextInput:
+            id: fec_number
+            text: fec_number.text
+            size_hint: vspace/2.3, line
+            pos_hint: {'right': 2.05*vspace , 'top': 1-(13*linespace+3*separator-2*space)}
+
+        Label:
+            text: "Number APVs"
+            size_hint: vspace/2.1, line
+            pos_hint: {'right': 2.6*vspace, 'top': 1-(13*linespace+3*separator-2*space)}
+    
+        TextInput:
+            id: apv_number
+            text: apv_number.text
+            size_hint: vspace/2.3, line
+            pos_hint: {'right': 3.05*vspace , 'top': 1-(13*linespace+3*separator-2*space)}
+
+        Label:
+            text: "Timestamp"
+            size_hint: vspace/2.1, line
+            pos_hint: {'right': 3.6*vspace, 'top': 1-(13*linespace+3*separator-2*space)}
+    
+        TextInput:
+            id: timestamp_number
+            text: timestamp_number.text
+            size_hint: vspace/2.3, line
+            pos_hint: {'right': 4.05*vspace , 'top': 1-(13*linespace+3*separator-2*space)}
+
+        Label:
+            text: "Mapping APV"
+            pos_hint: {'right': 2*vspace, 'top': 1-(14*linespace+3*separator-2*space)}
+    
+        TextInput:
+            id: apv_mapping
+            text: apv_mapping.text
+            pos_hint: {'right': 4*vspace , 'top': 1-(14*linespace+3*separator-2*space)}
+
+        Label:
+            text: "Mapping Detector"
+            pos_hint: {'right': 2*vspace, 'top': 1-(15*linespace+3*separator-2*space)}
+    
+        TextInput:
+            id: detector_mapping
+            text: detector_mapping.text
+            pos_hint: {'right': 4*vspace , 'top': 1-(15*linespace+3*separator-2*space)}

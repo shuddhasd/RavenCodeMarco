@@ -53,13 +53,13 @@ int detrow, detcolumn;
 std::vector<int> apvmapping;
 std::vector<int> detmapping;
 
-void readmappings(){                        //function to read mappings from APV and Detector txt files
+void readmappings(const char * apv_mapping, const char * detector_mapping){    //function to read mappings from APV and Detector txt files
     int apvdim=0, detdim=0;                 //I know, there are some better ways to do this, but this is vary simple and self-explicative
     int apvmat=0, detmat=0;
     char readvar[10];
     int i;
 
-    std::ifstream apvmap("apv_mapping");     //apv mapping file
+    std::ifstream apvmap(apv_mapping);     //apv mapping file
 
     if(!apvmap){
         std::cout<<"ERROR -- apv mapping file not found"<<std::endl;
@@ -91,7 +91,7 @@ void readmappings(){                        //function to read mappings from APV
     }
     apvmap.close();
 
-    std::ifstream detmap("detector_mapping_hybrid");     //apv mapping file
+    std::ifstream detmap(detector_mapping);     //apv mapping file
 
     if(!detmap){
         std::cout<<"ERROR -- detector mapping file not found"<<std::endl;
@@ -163,16 +163,14 @@ int main(){
     std::string filename_out_path = filename_out.substr(0, filename_out.find_last_of('/'));    //create the path for the other files
     settings.close();
 
-// -------------------------------- LOAD MAPPINGS -------------------------------- //
-
-    readmappings();
-
 // -------------------------------- LOAD DETECTOR SETTINGS -------------------------------- //
 
     int ntotFEC = 0;
     std::vector<int> ntotAPV;
     int ntotCh_Pad = 0;
-    int totTiming = 0;	
+    int totTiming = 0;
+    string file_APV_mapping;
+    string file_DET_mapping;
 
     std::ifstream detector("detector_settings");                    //detector settings file
 
@@ -186,9 +184,13 @@ int main(){
         for (int i = 0; i < ntotFEC; ++i){               //to load the number of APV for all FEC
             detector>>ntotAPV[i];
         }
-        detector>>ntotCh_Pad>>totTiming;
+        detector>>ntotCh_Pad>>totTiming>>file_APV_mapping>>file_DET_mapping;
     }
     detector.close();
+
+// -------------------------------- LOAD MAPPINGS -------------------------------- //
+
+    readmappings(file_APV_mapping.c_str(),file_DET_mapping.c_str());
 
 // -------------------------------- ANALYSIS -------------------------------- //
     std::cout<<"Start"<<std::endl;

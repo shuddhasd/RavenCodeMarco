@@ -99,6 +99,8 @@ int main(){
     std::vector<int> ntotAPV;
     int ntotCh_Pad = 0;
     int totTiming = 0;
+    string file_APV_mapping;
+    string file_DET_mapping;
 
     std::ifstream detector("detector_settings");                    //detector settings file
     if(!detector){
@@ -111,7 +113,7 @@ int main(){
         for (int i = 0; i < ntotFEC; ++i){               //to load the number of APV for all FEC
             detector>>ntotAPV[i];
         }
-        detector>>ntotCh_Pad>>totTiming;
+        detector>>ntotCh_Pad>>totTiming>>file_APV_mapping>>file_DET_mapping;
     }
     detector.close();
 

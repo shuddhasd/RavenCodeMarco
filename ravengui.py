@@ -3,6 +3,8 @@ import signal
 from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.widget import Widget
+from kivy.uix.dropdown import DropDown
+from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.checkbox import CheckBox
 import subprocess
@@ -15,8 +17,43 @@ from kivy.properties import BooleanProperty
 from kivy.config import Config
 
 Config.set('graphics', 'width', '1280')
+Config.set('graphics', 'height', '720')
 Config.set('graphics', 'left', 0)
 Config.set('graphics', 'top',  0)	
+
+dropdown = DropDown();
+btn_max = Button(text='max', size_hint_y=None, height=30)
+btn_max.bind(on_release=lambda btn: dropdown.select(btn_max.text))
+dropdown.add_widget(btn_max)
+btn_max_notrigger = Button(text='max_notrigger', size_hint_y=None, height=30)
+btn_max_notrigger.bind(on_release=lambda btn: dropdown.select(btn_max_notrigger.text))
+dropdown.add_widget(btn_max_notrigger)
+btn_max_notrigger_cluster = Button(text='max_notrigger_cluster', size_hint_y=None, height=30)
+btn_max_notrigger_cluster.bind(on_release=lambda btn: dropdown.select(btn_max_notrigger_cluster.text))
+dropdown.add_widget(btn_max_notrigger_cluster)
+btn_max_notrigger_gainscan = Button(text='max_notrigger_gainscan', size_hint_y=None, height=30)
+btn_max_notrigger_gainscan.bind(on_release=lambda btn: dropdown.select(btn_max_notrigger_gainscan.text))
+dropdown.add_widget(btn_max_notrigger_gainscan)
+btn_testmapping = Button(text='testmapping', size_hint_y=None, height=30)
+btn_testmapping.bind(on_release=lambda btn: dropdown.select(btn_testmapping.text))
+dropdown.add_widget(btn_testmapping)
+btn_All = Button(text='All', size_hint_y=None, height=30)
+btn_All.bind(on_release=lambda btn: dropdown.select(btn_All.text))
+dropdown.add_widget(btn_All)
+
+
+nlineF = 16
+nsectionF = 3
+line = 1.0/((nlineF*1.5)+(0.7*nsectionF)+0.5)
+space = line*0.5
+linespace = line+space
+separator = line*1.2
+vspace = 1.0/4
+mainbutton = Button(text='Select Mode', size_hint=(2*vspace-0.01, line),pos_hint={'right': 4*vspace , 'top': 1-(11*linespace+2*separator-space)} )
+mainbutton.bind(on_release=dropdown.open)
+dropdown.bind(on_select=lambda instance, x: setattr(mainbutton, 'text', x))
+
+
 
 class general_layout(FloatLayout):
 
@@ -26,6 +63,8 @@ class general_layout(FloatLayout):
 
 	def __init__(self, **kwargs):
 		super(general_layout, self).__init__(**kwargs)
+		self.add_widget(mainbutton)
+
 		self.col1=[1,0,0]
 		self.col2=[1,0,0]
 		self.col3=[1,0,0]
@@ -95,7 +134,8 @@ class general_layout(FloatLayout):
 		os.system("./ravendecoder")
 		self.update_decoder_color_green()
 
-	def analysiscommand(self,in1,in2,in3,in4):
+	def analysiscommand(self,in1,in2,in4):
+		in3 = mainbutton.text
 		self.update_analysis_color_red()
 		analyzer_settings = open("analyzer_settings","w")
 		analyzer_settings.write(in1+"\n"+in2+"\n"+in3+"\n"+in4)
@@ -104,6 +144,13 @@ class general_layout(FloatLayout):
 		time.sleep(1)
 		os.system("./ravenanalyzer")
 		self.update_analysis_color_green()
+
+	def updatecommand(self, in1, in2, in3, in4, in5):
+		updater_settings = open("detector_settings","w")
+		updater_settings.write(in1+"\n"+in2+"\n128\n"+in3+"\n"+in4+"\n"+in5)
+		print in1+"\n"+in2+"\n128\n"+in3+"\n"+in4+"\n"+in5
+		updater_settings.close()
+		time.sleep(1)
 
 class ravengui(App):
 	def build(self):
