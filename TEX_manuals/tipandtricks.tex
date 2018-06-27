@@ -1,0 +1,117 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[italian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{color}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+
+\title{RavenSRS tips and tricks}
+\author{Marco Baruzzo, elbaru90@gmail.com}
+
+\begin{document}
+	\maketitle
+
+	\titlepage
+
+	\tableofcontents
+	\newpage
+
+	\section{Cards, APV and cables}
+		\begin{itemize}
+			\item check connection of the grounding pins connected to APV adapter card (Minimize the noise)
+			\item check the APV white connector is perfectly connected with the adapter card.
+			\item check that the back part of the HV card is touching the APV card.
+			\item be careful about the connection to the MM.
+			\item check the flat cables to connect master and slaves are properly connected.
+			\item try to use shorter HDMI cables and then try to use all the HDMI cables of same length (for PLL value of the APV it is important).
+		\end{itemize}
+
+	\section{ADC cards and FEC}
+		\begin{itemize}
+			\item only first four HDMI connectors are working (max 8 APV)
+			\item for connecting the transceiver use J11 not J10
+			\item the trigger out can be use to check the rate of internal trigger.
+			\item When do power cycling please wait until the last GREEN LED is completely off before turning back on the SRS system.
+		\end{itemize}
+
+	\section{srsSC2.vi}
+		\subsection{Use:}
+			\begin{itemize}
+				\item remember to initialize
+				\item remember to change the PLL value on "APV Hybrids" tab, to select the right value (which usually depends on the cable length) checking the height of the peaks in the RavenDAQ
+				\item the values to be changed on the "Application" tab are:
+					\begin{itemize}
+						\item \textbf{bclk$\_$mode:} 3 (internal trigger, internal generated peaks), 4 (external trigger, external physics signals), 0 (internal trigger, external physics signals)
+						\item \textbf{bclk$\_$trgburst:} the \textit{n} that you insert gives you $(n+1)\times3$ timestamps (3=12, 4=15, max 8=27)
+						\item \textbf{bclk$\_$freq:} the dead-time in case of bclk$\_$mode=4 and frequency of the trigger in case of bclk$\_$mode=3=0
+						\item \textbf{bclk$\_$tgrdelay:} the delay from the external trigger and the trigger for the APVs in number of clock (1=25ns, 40000=1ms, 400=10$\mu$s)
+						\item \textbf{bclk$\_$rosync:} delay for the synchronization of the ADC window on the signal (\textbf{do not touch if there is not a good reason}, like very small trigger delay ($<300=7.5\mu$s) and similar) 
+						\item \textbf{evbld$\_$chenable:} hexadecimal number to activate the needed APV (1=first master, 2=first slave, 3=first master and first slave, F=4 APV, FF=8 APV, etc (for other info check the SRS manual))
+						\item \textbf{evbld$\_$datalenght:} data-length of the jumbo packets in unit of word(=2 bytes) (2000word=4000byte, max 4000word=8000byte) limited at 9000byte by the Ethernet card 
+					\end{itemize}
+				\item remember "WRITE" the values of the "Application" tab and click "ON" on the Read Out Control
+			\end{itemize}
+
+		\subsection{Problems:}
+			If the "Reqld Error" is red means that there are some errors with the connection with the FEC, so try in the order to:
+			\begin{itemize}
+				\item redo the initialization
+				\item check the cables
+				\item restart the FEC
+				\item try a ping on 10.0.0.2, if the FEC answer
+				\item restart LabView
+				\item restart the pc
+				\item boh, no idea.
+			\end{itemize}
+
+	\section{RavenDAQ}
+		\subsection{Initialization:}
+			\begin{itemize}
+				\item check the settings of the DAQ before starting the program, in particular:
+				\begin{itemize}
+			 		\item Number of timestamp
+			 		\item Number of APV
+				\end{itemize}
+				\item start the program with the start button of LabView
+				\item check the arriving of the data with the Raw Data viewer and check that the data from all the expected APV are present
+				\item if it is necessary to check the data of one particular APV, it is possible using the latency scan mode with the "Min" set at 0, in this way the DAQ is showing all the data arriving from the selected APV
+			\end{itemize}
+		\subsection{Latency scan}
+			\begin{itemize}
+				\item Check the detector, the source and the analog signal
+				\item Initialize the SRS and the DAQ as explained before
+				\item Use the "Latency scan" tab
+				\item Select the "Min" value as a threshold for the arriving "physical signal" (usually 2100 is OK)
+				\item Once used a triggered source check if in the "Latency scan" tab there are some refresh in the graph:
+				\begin{itemize}
+				 	\item \textbf{if not}, the data collection is not synchronized because the "good events" do not fall in the timeframe, so you need to try to change the \textbf{bclk$\_$tgrdelay} in the SlowControl to move the signals inside the timeframe 
+				 	\item \textbf{if yes}, check the positions of the peaks, if it is not in the requested position (wrong timestamp) the signal can be moved using \textbf{bclk$\_$tgrdelay} as before
+				 	\item \textbf{if yes and the positions of the peaks are in the right timestamp} the system is synchronized and ready for the acquisition
+				 \end{itemize} 
+			\end{itemize}
+
+		\subsection{Acquisition \textbf{without} DAQ triggering/zero suppression}
+			\begin{itemize}
+				\item Check the detector, the source and the analog signal
+				\item Initialize the SRS and the DAQ as explained before
+				\item Use the "Saving data" tab
+				\item Select the folder and the name of the file and save the data (it will save \textbf{EVERITHING} arriving from the SRS, one for each trigger arrived to the SRS)
+			\end{itemize}
+			\textbf{NB: saving a file with the same name means rewrite the one saved before}
+
+		\subsection{Acquisition \textbf{with} DAQ triggering/zero suppression}
+			\begin{itemize}
+				\item Check the detector, the source and the analog signal
+				\item Initialize the SRS and the DAQ as explained before
+				\item Use the "First analysis" tab
+				\item Click on the first analysis button and select the desired APV 
+				\item Collect some pedestal events (about 3k-5k) using the pedestal tab, by clicking "pedestal acquisition" to start and to stop
+				\item On the "Spectrum" tab, click on "Spectrum acquisition" to collect the physics data above the threshold set with the field "Sigma cut" in unit of sigma and selecting the peaks which are not in the first or last "head and tail" timestamp
+				\item If is possible to select also the event coming from only one pad of the detector using the "target pad field"
+				\item Activating the Hit Map tab enable the map of the hits detected (maximi of the peaks) using the selected mapping file (same working principle and file of the RavenCode mapping)
+				\item The data which pass over the threshold of the First Analysis system can be stored using the suitable field in the "Hit Map" tab, which works as the "Data saving"
+			\end{itemize}
+			\textbf{NB: saving a file with the same name means rewrite the one saved before}
+
+\end{document}
